@@ -1,0 +1,6 @@
+export  default function authHeader() {
+const user = 1;
+console.log(user);
+    return{Authorization : 'Bearer' + localStorage.jwtToken};
+}
+export {authHeader}
