@@ -35,10 +35,10 @@ class CertificateList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      books: [],
+      certificates: [],
       search: "",
       currentPage: 1,
-      booksPerPage: 5,
+      certificatesPerPage: 5,
       sortDir: "asc",
     };
   }
@@ -48,16 +48,19 @@ class CertificateList extends Component {
       this.state.sortDir === "asc"
           ? this.setState({ sortDir: "desc" })
           : this.setState({ sortDir: "asc" });
-      this.findAllBooks(this.state.currentPage);
+      this.findAllCertificates(this.state.currentPage);
     }, 500);
   };
 
   componentDidMount() {
-    this.findAllBooks(this.state.currentPage);
+    this.findAllCertificates(this.state.currentPage);
   }
 
-  findAllBooks(currentPage) {
-    currentPage -= 1;
+  findAllCertificates(currentPage) {
+
+    if (currentPage<1){
+      currentPage = 1;
+    }
     axios
         .get(
             "http://localhost:8080/certificates" //+
@@ -78,10 +81,10 @@ class CertificateList extends Component {
           console.log(data)
 
           this.setState({
-            books: data,
+            certificates: data,
             totalPages: data.length,
             totalElements: data.totalElements,
-            currentPage: 1,
+            currentPage: currentPage,
 
           });
         })
@@ -92,13 +95,13 @@ class CertificateList extends Component {
         });
   }
 
-  addCertificate = (bookId) => {
-    this.props.addCertificate(bookId);
+  addCertificate = (certificateId) => {
+    this.props.addCertificate(certificateId);
     setTimeout(() => {
       if (this.props.bookObject != null) {
         this.setState({ show: true });
         setTimeout(() => this.setState({ show: false }), 3000);
-        this.findAllBooks(this.state.currentPage);
+        this.findAllCertificates(this.state.currentPage);
       } else {
         this.setState({ show: false });
       }
@@ -106,13 +109,13 @@ class CertificateList extends Component {
   };
 
 
-  deleteBook = (bookId) => {
-    this.props.deleteBook(bookId);
+  deleteCertificate = (certificateId) => {
+    this.props.deleteCertificate(certificateId);
     setTimeout(() => {
       if (this.props.bookObject != null) {
         this.setState({ show: true });
         setTimeout(() => this.setState({ show: false }), 3000);
-        this.findAllBooks(this.state.currentPage);
+        this.findAllCertificates(this.state.currentPage);
       } else {
         this.setState({ show: false });
       }
@@ -124,7 +127,7 @@ class CertificateList extends Component {
     if (this.state.search) {
       this.searchData(targetPage);
     } else {
-      this.findAllBooks(targetPage);
+      this.findAllCertificates(targetPage);
     }
     this.setState({
       [event.target.name]: targetPage,
@@ -137,7 +140,7 @@ class CertificateList extends Component {
       if (this.state.search) {
         this.searchData(firstPage);
       } else {
-        this.findAllBooks(firstPage);
+        this.findAllCertificates(firstPage);
       }
     }
   };
@@ -154,20 +157,21 @@ class CertificateList extends Component {
       if (this.state.search) {
         this.searchData( prevPage);
       } else {
-        this.findAllBooks( prevPage);
+        this.findAllCertificates( prevPage);
       }
     }
   };
 
   lastPage = () => {
-    let condition = Math.ceil(
-        this.state.totalElements / this.state.booksPerPage
-    );
+    let condition = (Math.ceil(this.state.certificates && this.state.certificates.length / this.state.certificatesPerPage))
+    console.log(this.state.certificates)
+    console.log(condition)
+    console.log("Вфвва")
     if (this.state.currentPage < condition) {
       if (this.state.search) {
         this.searchData(condition);
       } else {
-        this.findAllBooks(condition);
+        this.findAllCertificates(condition);
       }
     }
   };
@@ -176,14 +180,14 @@ class CertificateList extends Component {
 
     if (
         this.state.currentPage <
-        Math.ceil(this.state.totalElements / this.state.booksPerPage)
+        Math.ceil(this.state.totalElements / this.state.certificatesPerPage)
     )
 
     {
       if (this.state.search) {
         this.searchData(this.state.currentPage + 1);
       } else {
-        this.findAllBooks(this.state.currentPage + 1);
+        this.findAllCertificates(this.state.currentPage + 1);
       }
 
     }
@@ -202,19 +206,16 @@ class CertificateList extends Component {
 
   cancelSearch = () => {
     this.setState({ search: "" });
-    this.findAllBooks(this.state.currentPage);
+    this.findAllCertificates(this.state.currentPage);
   };
 
   searchData = (currentPage) => {
     currentPage -= 1;
     axios
         .get(
-            "http://localhost:8080/certificates/" +
-            this.state.search +
-            "?page=" +
-            currentPage +
-            "&size=" +
-            this.state.booksPerPage
+            //"http://localhost:8080/certificates/string/" +
+            //this.state.search
+"http://localhost:8080/certificates/string/"+this.state.search
         )
         .then((response) => response.data)
         .then((data) => {
@@ -224,7 +225,7 @@ class CertificateList extends Component {
           console.log("LL")
 
           this.setState({
-            books: data,
+            certificates: data,
             totalPages: data.totalPages,
             totalElements: data.totalElements,
             currentPage: 1, //data.number + 1,
@@ -233,26 +234,24 @@ class CertificateList extends Component {
   };
 
   render() {
-    const { books, currentPage, search,booksPerPage } = this.state;
+    const { certificates, currentPage, search,certificatesPerPage } = this.state;
 
     console.log("ahahahahaa")
     console.log("ahahahahaa")
-    console.log(books)
     console.log("-0-0-")
-    console.log(search)
+    console.log(certificatesPerPage)
     console.log("ahahahahaa")
-    const lastIndex = currentPage * booksPerPage;
-    const firstIndex = lastIndex - booksPerPage;
+    const lastIndex = currentPage * certificatesPerPage;
+    const firstIndex = lastIndex - certificatesPerPage;
 
-    let currentUsers = books;
+    let currentUsers = certificates;
     if (currentUsers.length>1){
       currentUsers
-          = books && books.slice(firstIndex, lastIndex);}
+          = certificates && certificates.slice(firstIndex, lastIndex);}
 
     console.log(currentUsers)
     console.log(Array.isArray(currentUsers))
-    const totalPages = books && books.length / booksPerPage
-    console.log(books.length)
+    const totalPages = (Math.ceil(certificates && certificates.length / certificatesPerPage))
     console.log(totalPages)
     return (
 
@@ -335,7 +334,15 @@ class CertificateList extends Component {
                       <td>{currentUsers.description}</td>
                       <td>{currentUsers.duration}</td>
                       <td>{currentUsers.price}</td>
-                      <td>{currentUsers.createDate}</td>
+
+                      <td>
+                        {currentUsers.createDate}
+                        {console.log(currentUsers.createDate.slice(0,5))}</td>
+                        {console.log("PPPPPPPPPPPPPPPP")}
+                        {console.log("PPPPPPPPPPPPPPPP")}
+                        {console.log("PPPPPPPPPPPPPPPP")}
+                        {console.log("PPPPPPPPPPPPPPPP")}
+                        {console.log("PPPPPPPPPPPPPPPP")}
                       <td>{currentUsers.lastUpdateDate}</td>
                       <td>
                         <ButtonGroup>
@@ -348,7 +355,7 @@ class CertificateList extends Component {
                           <Button
                               size="sm"
                               variant="outline-danger"
-                              onClick={() => this.deleteBook(currentUsers.id)}
+                              onClick={() => this.deleteCertificate(currentUsers.id)}
                           >
                             <FontAwesomeIcon icon={faTrash} />
                           </Button>
@@ -357,21 +364,22 @@ class CertificateList extends Component {
                     </tr>
 
                 ) : (
-                    currentUsers.map((book,index) => (
+                    currentUsers.map((certificate,index) => (
                         <tr key={index}>
                           <td>
-                            {book.name}
+                            {certificate.name}
                           </td>
-                          <td>{book.description}</td>
-                          <td>{book.duration}</td>
-                          <td>{book.price}</td>
-                          <td>{book.createDate}</td>
-                          <td>{book.lastUpdateDate}</td>
+                          <td>{certificate.description}</td>
+                          <td>{certificate.duration}</td>
+                          <td>{certificate.price}</td>
+                          <td>{certificate.createDate.slice(0,16)}</td>
+                          <td>{certificate.lastUpdateDate.slice(0,16)}</td>
                           <td>
-                            {localStorage.Admin ==="1111" ?
+
+                            {localStorage.roles ==="ROLE_ADMIN" ?
                                 <ButtonGroup>
                                   <Link
-                                      to={"edit/" + book.id}
+                                      to={"edit/" + certificate.id}
                                       className="btn btn-sm btn-outline-primary"
                                   >
                                     <FontAwesomeIcon icon={faEdit} />
@@ -379,7 +387,7 @@ class CertificateList extends Component {
                                   <Button
                                       size="sm"
                                       variant="outline-danger"
-                                      onClick={() => this.deleteBook(book.id)}
+                                      onClick={() => this.deleteCertificate(certificate.id)}
                                   >
                                     <FontAwesomeIcon icon={faTrash} />
                                   </Button>
@@ -391,7 +399,7 @@ class CertificateList extends Component {
                                   <Button
                                       size="sm"
                                       variant="outline-danger"
-                                      onClick={() => this.addCertificate(book.id)}
+                                      onClick={() => this.addCertificate(certificate.id)}
                                   >
                                     <FontAwesomeIcon icon={faCheck} />
                                   </Button>
@@ -407,7 +415,7 @@ class CertificateList extends Component {
                 </tbody>
               </Table>
             </Card.Body>
-            {books.length > 0 ? (
+            {certificates.length > 0 ? (
                 <Card.Footer>
                   <div style={{ float: "left" }}>
                     Showing Page {currentPage} of {totalPages}
@@ -474,8 +482,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    deleteBook: (bookId) => dispatch(deleteCertificate(bookId)),
-    addCertificate:(bookId) => dispatch(addCertificate(bookId))
+    deleteCertificate: (certificateId) => dispatch(deleteCertificate(certificateId)),
+    addCertificate:(certificateId) => dispatch(addCertificate(certificateId))
 
   };
 };

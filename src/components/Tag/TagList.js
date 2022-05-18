@@ -52,7 +52,9 @@ class CertificateList extends Component {
     }
 
     findAllBooks(currentPage) {
-        currentPage -= 1;
+      if (currentPage<1){
+          currentPage =1;
+      }
         axios
             .get(
                 "http://localhost:8080/tags" //+
@@ -76,7 +78,7 @@ class CertificateList extends Component {
                     books: data,
                     totalPages: data.length,
                     totalElements: data.totalElements,
-                    currentPage: 1,
+                    currentPage: currentPage,
 
                 });
             })
@@ -141,9 +143,7 @@ class CertificateList extends Component {
     };
 
     lastPage = () => {
-        let condition = Math.ceil(
-            this.state.totalElements / this.state.booksPerPage
-        );
+        let condition =(Math.ceil(this.state.books && this.state.books.length / this.state.booksPerPage));
         if (this.state.currentPage < condition) {
             if (this.state.search) {
                 this.searchData(condition);
@@ -188,14 +188,11 @@ class CertificateList extends Component {
 
     searchData = (currentPage) => {
         currentPage -= 1;
+        console.log(this.state.search);
+        console.log("чёт бл*?");
         axios
             .get(
-                "http://localhost:8080/tags/" +
-                this.state.search +
-                "?page=" +
-                currentPage +
-                "&size=" +
-                this.state.booksPerPage
+                "http://localhost:8080/tags/string/"+this.state.search
             )
             .then((response) => response.data)
             .then((data) => {
@@ -233,7 +230,7 @@ class CertificateList extends Component {
         console.log(currentUsers)
         console.log("+++++++++++++++++++++")
         console.log(Array.isArray(currentUsers))
-        const totalPages = books && books.length / booksPerPage
+        const totalPages = (Math.ceil(books && books.length / booksPerPage))
         console.log(books.length)
         console.log("ahahahahaa")
         console.log(totalPages)
@@ -250,7 +247,7 @@ class CertificateList extends Component {
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Card.Header>
                         <div style={{ float: "left" }}>
-                            <FontAwesomeIcon icon={faList} /> Book List
+                            <FontAwesomeIcon icon={faList} /> Certificate List
                         </div>
                         <div style={{ float: "right" }}>
                             <InputGroup size="sm">

@@ -18,10 +18,6 @@ const Home = () => {
 console.log()
   const auth = useSelector((state) => state.nameDad);
   console.log(auth);
-  console.log("HUITa! !b!!!!!!!!!!!!l!!!!!!!!!!!!!!!!!!!!!");
- //var abc =  parseJwt(localStorage.jwtToken);
- //var roles = (abc.roles[0]);
- //localStorage.setItem("roles",roles);
   return (
       <Alert style={{ backgroundColor: "#343A40", color: "#ffffff80" }}>
         Welcome {localStorage.Admin}

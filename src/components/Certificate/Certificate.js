@@ -50,22 +50,37 @@ class Certificate extends Component {
   }
 
 
-  findCertificateById = (bookId) => {
-    this.props.fetchBook(bookId);
+  findCertificateById = (certificateId) => {
+    this.props.fetchCertificate(certificateId);
     setTimeout(() => {
-      let book = this.props.bookObject.book;
-      if (book != null) {
+      let certificate = this.props.bookObject.book;
+      if (certificate != null) {
+
+        console.log("LLLL");
+        console.log(certificate)
+        console.log("OOOO")
+        console.log(certificate.tagList[0].name)
+
+        let nameTag= "";
+        for (let i = 0; i < certificate.tagList.length; i++) {
+          nameTag = nameTag+" "+ certificate.tagList[i].name;
+        }
+        console.log(nameTag)
+
+
         this.setState({
-          id: book.id,
-          name: book.name,
-          description: book.description,
-          duration: book.duration,
-          isbnNumber: book.isbnNumber,
-          price: book.price,
-          language: book.language,
-          genre: book.genre,
-          tagList1: book.tagList1,
+          id: certificate.id,
+          name: certificate.name,
+          description: certificate.description,
+          duration: certificate.duration,
+          isbnNumber: certificate.isbnNumber,
+          price: certificate.price,
+          language: certificate.language,
+          genre: certificate.genre,
+          tagList1: nameTag,
         });
+
+
       }
     }, 1000);
   };
@@ -103,10 +118,10 @@ class Certificate extends Component {
     this.setState(this.initialState);
   };
 
-  updateBook = (event) => {
+  updateCertificate = (event) => {
     event.preventDefault();
 
-    const book = {
+    const certificate = {
       id: this.state.id,
       name: this.state.name,
       description: this.state.description,
@@ -116,7 +131,7 @@ class Certificate extends Component {
       genre: this.state.genre,
       tagList1: this.state.tagList1,
     };
-    this.props.updateBook(book);
+    this.props.updateCertificate(certificate);
     setTimeout(() => {
       if (this.props.bookObject.book != null) {
         this.setState({ show: true, method: "put" });
@@ -128,13 +143,13 @@ class Certificate extends Component {
     this.setState(this.initialState);
   };
 
-  bookChange = (event) => {
+  certificateChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
-  bookList = () => {
+  certificateList = () => {
     return this.props.history.push("/list");
   };
 
@@ -163,12 +178,11 @@ class Certificate extends Component {
           </Card.Header>
           <Form
             onReset={this.resetCertificate}
-            onSubmit={this.state.id ? this.updateBook : this.submitCertificate}
+            onSubmit={this.state.id ? this.updateCertificate : this.submitCertificate}
             id="bookFormId"
           >
             <Card.Body>
               <Form.Row>
-
                 <Form.Group as={Col} controlId="formGridTitle">
                   <Form.Label>Name</Form.Label>
                   <Form.Control
@@ -177,7 +191,7 @@ class Certificate extends Component {
                     type="test"
                     name="name"
                     value={name}
-                    onChange={this.bookChange}
+                    onChange={this.certificateChange}
                     className={"bg-dark text-white"}
                     placeholder="Enter Certificate Title"
                   />
@@ -192,7 +206,7 @@ class Certificate extends Component {
                     type="test"
                     name="description"
                     value={description}
-                    onChange={this.bookChange}
+                    onChange={this.certificateChange}
                     className={"bg-dark text-white"}
                     placeholder="Enter Certificate Author"
                   />
@@ -207,7 +221,7 @@ class Certificate extends Component {
                       type="test"
                       name="duration"
                       value={duration}
-                      onChange={this.bookChange}
+                      onChange={this.certificateChange}
                       className={"bg-dark text-white"}
                       placeholder="Enter Certificate Price"
                   />
@@ -223,7 +237,7 @@ class Certificate extends Component {
                     type="test"
                     name="tagList1"
                     value={tagList1}
-                    onChange={this.bookChange}
+                    onChange={this.certificateChange}
                     className={"bg-dark text-white"}
                     placeholder="Enter Tag "
                 />
@@ -240,7 +254,7 @@ class Certificate extends Component {
                     type="test"
                     name="price"
                     value={price}
-                    onChange={this.bookChange}
+                    onChange={this.certificateChange}
                     className={"bg-dark text-white"}
                     placeholder="Enter Certificate Price"
                   />
@@ -260,7 +274,7 @@ class Certificate extends Component {
                 size="sm"
                 variant="info"
                 type="button"
-                onClick={() => this.bookList()}
+                onClick={() => this.certificateList()}
               >
                 <FontAwesomeIcon icon={faList} /> Certificate List
               </Button>
@@ -280,9 +294,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    saveCertificate: (book) => dispatch(saveCertificate(book)),
-    fetchBook: (bookId) => dispatch(fetchCertificate(bookId)),
-    updateBook: (book) => dispatch(updateCertificate(book)),
+    saveCertificate: (certificate) => dispatch(saveCertificate(certificate)),
+    fetchCertificate: (certificateId) => dispatch(fetchCertificate(certificateId)),
+    updateCertificate: (certificate) => dispatch(updateCertificate(certificate)),
   };
 };
 
